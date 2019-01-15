@@ -87,11 +87,14 @@ func (self Packet) computeIPChecksum() uint16 {
 func (self Packet) computeTCPChecksum() uint16 {
 	self.SetTCPChecksum(0)
 
+	length := self.TotalLength() - self.IHL()
+
 	csum := self.pseudoheaderChecksum()
 	csum += uint32(TCP)
-	csum += uint32(self.TotalLength() - self.IHL())
+	csum += uint32(length & 0xFFFF)
+	csum += uint32(length >> 16)
 
-	return checksum(self.Raw[:self.TotalLength()-self.IHL()], csum)
+	return checksum(self.Raw[self.IHL():], csum)
 }
 
 func (self Packet) computeUDPChecksum() uint16 {

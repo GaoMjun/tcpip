@@ -19,7 +19,7 @@ func TestTCP(t *testing.T) {
 	packet.Raw, _ = hex.DecodeString("4500003C59DC40004006E7E97B7D736E0A01000AE91E22B83CDAFCAE00000000A0027210AF670000020405B40402080A9DA196F20000000001030307")
 
 	packet.ComputeAllChecksum()
-	log.Println(packet)
+	log.Println(hex.EncodeToString(packet.Raw))
 }
 
 func TestUDP(t *testing.T) {
