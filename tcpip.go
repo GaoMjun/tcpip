@@ -94,7 +94,7 @@ func (self Packet) computeTCPChecksum() uint16 {
 	csum += uint32(length & 0xFFFF)
 	csum += uint32(length >> 16)
 
-	return checksum(self.Raw[self.IHL():], csum)
+	return checksum(self.Raw[self.IHL():self.TotalLength()], csum)
 }
 
 func (self Packet) computeUDPChecksum() uint16 {
