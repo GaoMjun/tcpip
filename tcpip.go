@@ -116,16 +116,14 @@ func (self Packet) pseudoheaderChecksum() (csum uint32) {
 
 	if self.Version() == IPv6 {
 		ip := self.SourceAddress()
-		csum += uint32(ip >> 48 & 0xFFFF)
-		csum += uint32(ip >> 32 & 0xFFFF)
-		csum += uint32(ip >> 16 & 0xFFFF)
-		csum += uint32(ip >> 0 & 0xFFFF)
+		for i := 0; i < len(ip); i = i + 2 {
+			csum += uint32(ip[i])<<8 | uint32(ip[i+1])
+		}
 
 		ip = self.DestinationAddress()
-		csum += uint32(ip >> 48 & 0xFFFF)
-		csum += uint32(ip >> 32 & 0xFFFF)
-		csum += uint32(ip >> 16 & 0xFFFF)
-		csum += uint32(ip >> 0 & 0xFFFF)
+		for i := 0; i < len(ip); i = i + 2 {
+			csum += uint32(ip[i])<<8 | uint32(ip[i+1])
+		}
 
 		return
 	}
