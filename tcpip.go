@@ -1,6 +1,10 @@
 package tcpip
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/GaoMjun/goutils"
+)
 
 type VERSION int
 
@@ -25,15 +29,31 @@ func (self Packet) String() (s string) {
 		switch self.Protocol() {
 		case ICMP:
 			s += fmt.Sprintf("ICMP %s->%s",
-				InetNtoA(self.SourceIPAddress()), InetNtoA(self.DestinationIPAddress()))
+				goutils.InetNtoA(self.SourceIPAddress()), goutils.InetNtoA(self.DestinationIPAddress()))
 		case TCP:
 			s += fmt.Sprintf("TCP %s:%d->%s:%d",
-				InetNtoA(self.SourceIPAddress()), self.SourcePort(),
-				InetNtoA(self.DestinationIPAddress()), self.DestinationPort())
+				goutils.InetNtoA(self.SourceIPAddress()), self.SourcePort(),
+				goutils.InetNtoA(self.DestinationIPAddress()), self.DestinationPort())
+
+			if self.SYN() == 1 {
+				s += " SYN"
+			}
+
+			if self.ACK() == 1 {
+				s += " ACK"
+			}
+
+			if self.FIN() == 1 {
+				s += " FIN"
+			}
+
+			if self.RST() == 1 {
+				s += " RST"
+			}
 		case UDP:
 			s += fmt.Sprintf("UDP %s:%d->%s:%d",
-				InetNtoA(self.SourceIPAddress()), self.SourcePort(),
-				InetNtoA(self.DestinationIPAddress()), self.DestinationPort())
+				goutils.InetNtoA(self.SourceIPAddress()), self.SourcePort(),
+				goutils.InetNtoA(self.DestinationIPAddress()), self.DestinationPort())
 		default:
 			s += "not support porotocol "
 		}
@@ -60,6 +80,12 @@ func (self Packet) ComputeAllChecksum() {
 		if self.Protocol() == UDP {
 			sum = self.computeUDPChecksum()
 			self.SetUDPChecksum(int(sum))
+			return
+		}
+
+		if self.Protocol() == ICMP {
+			sum = self.computeICMPChecksum()
+			self.SetICMPChecksum(int(sum))
 			return
 		}
 	}
@@ -99,6 +125,11 @@ func (self Packet) computeTCPChecksum() uint16 {
 
 func (self Packet) computeUDPChecksum() uint16 {
 	return 0
+}
+
+func (self Packet) computeICMPChecksum() uint16 {
+	self.SetICMPChecksum(0)
+	return checksum(self.Raw[self.IHL():self.TotalLength()], 0)
 }
 
 func (self Packet) pseudoheaderChecksum() (csum uint32) {

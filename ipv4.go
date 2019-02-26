@@ -16,6 +16,11 @@ func (self Packet) TotalLength() int {
 	return int(self.Raw[2])<<8 | int(self.Raw[3])
 }
 
+func (self Packet) SetTotalLength(length int) {
+	self.Raw[2] = byte(length >> 8)
+	self.Raw[3] = byte(length)
+}
+
 func (self Packet) Identification() int {
 	return int(self.Raw[4])<<8 | int(self.Raw[5])
 }
@@ -45,22 +50,22 @@ func (self Packet) SetHeaderChecksum(sum int) {
 	self.Raw[11] = byte(sum >> 0)
 }
 
-func (self Packet) SourceIPAddress() int {
-	return int(self.Raw[12])<<24 | int(self.Raw[13])<<16 | int(self.Raw[14])<<8 | int(self.Raw[15])
+func (self Packet) SourceIPAddress() uint32 {
+	return uint32(self.Raw[12])<<24 | uint32(self.Raw[13])<<16 | uint32(self.Raw[14])<<8 | uint32(self.Raw[15])
 }
 
-func (self Packet) SetSourceIPAddress(ip int) {
+func (self Packet) SetSourceIPAddress(ip uint32) {
 	self.Raw[12] = byte(ip >> 24)
 	self.Raw[13] = byte(ip >> 16)
 	self.Raw[14] = byte(ip >> 8)
 	self.Raw[15] = byte(ip >> 0)
 }
 
-func (self Packet) DestinationIPAddress() int {
-	return int(self.Raw[16])<<24 | int(self.Raw[17])<<16 | int(self.Raw[18])<<8 | int(self.Raw[19])
+func (self Packet) DestinationIPAddress() uint32 {
+	return uint32(self.Raw[16])<<24 | uint32(self.Raw[17])<<16 | uint32(self.Raw[18])<<8 | uint32(self.Raw[19])
 }
 
-func (self Packet) SetDestinationIPAddress(ip int) {
+func (self Packet) SetDestinationIPAddress(ip uint32) {
 	self.Raw[16] = byte(ip >> 24)
 	self.Raw[17] = byte(ip >> 16)
 	self.Raw[18] = byte(ip >> 8)

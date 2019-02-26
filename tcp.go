@@ -52,9 +52,27 @@ func (self Packet) CWR() int {
 	return int(self.Raw[offset]&0x80) >> 7
 }
 
+func (self Packet) SetCWR(cwr int) {
+	offset := self.IHL() + 2 + 2 + 4 + 4 + 1
+	if cwr == 0 {
+		self.Raw[offset] &= 0x7F
+	} else {
+		self.Raw[offset] |= 0x80
+	}
+}
+
 func (self Packet) ECE() int {
 	offset := self.IHL() + 2 + 2 + 4 + 4 + 1
 	return int(self.Raw[offset]&0x40) >> 6
+}
+
+func (self Packet) SetECE(ece int) {
+	offset := self.IHL() + 2 + 2 + 4 + 4 + 1
+	if ece == 0 {
+		self.Raw[offset] &= 0xBF
+	} else {
+		self.Raw[offset] |= 0x40
+	}
 }
 
 func (self Packet) URG() int {
