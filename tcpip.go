@@ -14,11 +14,12 @@ const (
 )
 
 type Packet struct {
-	Raw []byte
+	Raw    []byte
+	Offset int
 }
 
 func (self Packet) Version() VERSION {
-	return VERSION(self.Raw[0] >> 4)
+	return VERSION(self.Raw[self.Offset+0] >> 4)
 }
 
 func (self Packet) String() (s string) {
@@ -107,7 +108,7 @@ func (self Packet) ComputeAllChecksum() {
 
 func (self Packet) computeIPChecksum() uint16 {
 	self.SetHeaderChecksum(0)
-	return checksum(self.Raw[:self.IHL()], 0)
+	return checksum(self.Raw[self.Offset:self.Offset+self.IHL()], 0)
 }
 
 func (self Packet) computeTCPChecksum() uint16 {
@@ -120,7 +121,7 @@ func (self Packet) computeTCPChecksum() uint16 {
 	csum += uint32(length & 0xFFFF)
 	csum += uint32(length >> 16)
 
-	return checksum(self.Raw[self.IHL():self.TotalLength()], csum)
+	return checksum(self.Raw[self.Offset+self.IHL():self.Offset+self.TotalLength()], csum)
 }
 
 func (self Packet) computeUDPChecksum() uint16 {
@@ -129,7 +130,7 @@ func (self Packet) computeUDPChecksum() uint16 {
 
 func (self Packet) computeICMPChecksum() uint16 {
 	self.SetICMPChecksum(0)
-	return checksum(self.Raw[self.IHL():self.TotalLength()], 0)
+	return checksum(self.Raw[self.Offset+self.IHL():self.Offset+self.TotalLength()], 0)
 }
 
 func (self Packet) pseudoheaderChecksum() (csum uint32) {
