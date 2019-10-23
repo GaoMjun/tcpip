@@ -56,13 +56,13 @@ func (self Packet) String() (s string) {
 				goutils.InetNtoA(self.SourceIPAddress()), self.SourcePort(),
 				goutils.InetNtoA(self.DestinationIPAddress()), self.DestinationPort())
 		default:
-			s += "not support porotocol "
+			s += "not support protocol "
 		}
 
 	case IPv6:
 		s += "IPv6 "
 	default:
-		s += "not support porotocol "
+		s += "not support protocol "
 	}
 	return
 }
