@@ -3,7 +3,7 @@ package tcpip
 import (
 	"fmt"
 
-	"github.com/GaoMjun/goutils"
+	"goutils"
 )
 
 type VERSION int
